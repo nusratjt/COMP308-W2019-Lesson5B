@@ -49,10 +49,55 @@ router.post('/add', (req, res, next) => {
             res.end(err);
         }
         else {
-            //refresh hte contact list
+            //refresh the contact list
             res.redirect('/contact-list');
         }
     });  
 });
+
+// GET request  display the Edit page
+router.get('/edit/:id', (req, res, next) => {
+    let id = req.params.id;
+    console.log(id);
+
+    contactModel.findById(id, (err, contactObject) => {
+        if(err){
+            console.log(err);
+            res.end(err);
+        }
+        else {
+            // show the edit view
+            res.render('contacts/edit', {
+                title: "Edit contact",
+                contact: contactModel
+            });
+        }
+    });
+});
+
+/* POST request - Update the database with data from the edit page */
+router.post('/edit/:id', (req, res, next) => {
+    let id = req.params.id;
+    let updatedContact = contactModel({
+        "_id": id,
+        "firstName": req.body.firstName,
+        "lastName": req.body.lastName,
+        "age": req.body.age
+    });
+
+    contactModel.update({_id:id}, updatedContact, (err) => {
+        if(err){
+            console.log(err);
+            res.end(err);
+        }
+        else
+        {
+            // refresh the contact list
+            res.redirect('/contact-list');
+        }
+    })
+})
+
+
 
 module.exports = router;
